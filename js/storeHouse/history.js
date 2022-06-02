@@ -59,6 +59,10 @@ const historyActions = {
 
     formularioStockProducto : (event) => {
         StoreHouseApp.handlerStockProducto();
+    },
+
+    mostrarFavoritos : (event) => {
+        StoreHouseApp.handlerMostrarFavoritos();
     }
 }
 window.addEventListener('popstate', function (event) {

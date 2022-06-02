@@ -607,24 +607,48 @@ const SHSingleton = (function () {
 
                 //En caso que no exista la categoria, lanzamos excepción.
                 if (aux === -1) {
-                    throw new valueNotIncludedException("serialNumber");
+                    throw new valueNotIncludedException("titulo");
                 }
 
                 return obj;
             }
 
-            listProducts (producto) {
+            listProducts(producto) {
                 let obj;
                 this.#categoriesStoreHouse.forEach((elem) => {
                     elem.products.forEach((item) => {
                         if (item.product.name === producto)
-                        obj = item.product;
+                            obj = item.product;
                     });
                 });
 
                 return obj;
             }
+
+            getProductBySerial(serial) {
+                let obj;
+                this.#categoriesStoreHouse.forEach((elem) => {
+                    elem.products.forEach((item) => {
+                        if (item.product.serialNumber === serial)
+                            obj = item.product;
+                    });
+                });
+
+                return obj;
+            }
+
+            *generadorProductos(array) {
+                for (const item of array) {
+                    yield {
+                        serialNumber: item.serialNumber,
+                        name: item.name,
+                        price: item.price,
+                        images: item.images
+                    };
+                }
+            }
         }
+
         let a = new StoreHouse();
         Object.freeze(a);
         return a;
