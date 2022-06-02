@@ -29,6 +29,8 @@ let tiendaOK;
 let categoriaOK;
 let productoOK;
 let stockOK;
+let usuarioOK;
+let contrasenaOK;
 
 let fsnumber;
 let fname;
@@ -55,15 +57,17 @@ let fcategoria;
 let fproducto;
 let fproductoid;
 let fstock;
+let fusuario;
+let fcontrasena;
 
 class storeHouseView {
 
-    #excecuteHandler(handler, handlerArguments, scrollElement, data, url, event){
-	    handler(...handlerArguments);
-	    $(scrollElement).get(0).scrollIntoView();
-	    history.pushState(data, null, url);
-	    event.preventDefault();
-	}
+    #excecuteHandler(handler, handlerArguments, scrollElement, data, url, event) {
+        handler(...handlerArguments);
+        $(scrollElement).get(0).scrollIntoView();
+        history.pushState(data, null, url);
+        event.preventDefault();
+    }
 
     constructor() {
         //Contenedores HTML donde irán pintándose los elementos
@@ -89,12 +93,12 @@ class storeHouseView {
         */
 
         $('#inicio1').click((event) => {
-			this.#excecuteHandler(handleCargaTiendas, [], this.main, {action: 'init'}, '#', event);
-		});
+            this.#excecuteHandler(handleCargaTiendas, [], this.main, { action: 'init' }, '#', event);
+        });
 
-		$('#inicio2').click((event) => {
-			this.#excecuteHandler(handleCargaTiendas, [], this.main, {action: 'init'}, '#', event);
-		});
+        $('#inicio2').click((event) => {
+            this.#excecuteHandler(handleCargaTiendas, [], this.main, { action: 'init' }, '#', event);
+        });
     }
 
     //Cuando el documento esté listo se llamará al handleCargaTiendas
@@ -184,7 +188,7 @@ class storeHouseView {
     bindProductsCategoryList(handleProductsCategoryList) {
         $("#categoriasListadoNav").on('click', ".elemCategory", (event) => {
             let idCategoria = $(event.target).closest($(".elemCategory")).get(0).dataset.categoria;
-            this.#excecuteHandler(handleProductsCategoryList, [idCategoria], this.main, {action: 'cargarCategorias', idCategoria : idCategoria}, '#ProductosCategorias', event);
+            this.#excecuteHandler(handleProductsCategoryList, [idCategoria], this.main, { action: 'cargarCategorias', idCategoria: idCategoria }, '#ProductosCategorias', event);
         });
     }
 
@@ -195,7 +199,7 @@ class storeHouseView {
     bindProductsStoreList(handleProductsStoreList) {
         $("#tiendasListadoNav").on('click', ".elemShop", (event) => {
             let idTienda = $(event.target).closest($(".elemShop")).get(0).dataset.tienda;
-            this.#excecuteHandler(handleProductsStoreList, [idTienda], this.main, {action: 'cargarTiendas', idTienda : idTienda}, '#ProductosTiendas', event);
+            this.#excecuteHandler(handleProductsStoreList, [idTienda], this.main, { action: 'cargarTiendas', idTienda: idTienda }, '#ProductosTiendas', event);
         });
     }
 
@@ -213,33 +217,59 @@ class storeHouseView {
 
         $(this.main).on('click', ".botontienda", (event) => {
             let idTienda = $(event.target).closest($(".botontienda")).get(0).dataset.tienda;
-            this.#excecuteHandler(handleProductsStoreList, [idTienda], this.main, {action: 'cargarTiendasMenu', idTienda : idTienda}, '#ProductosTiendas', event);
+            this.#excecuteHandler(handleProductsStoreList, [idTienda], this.main, { action: 'cargarTiendasMenu', idTienda: idTienda }, '#ProductosTiendas', event);
         });
     }
 
     //Esta función será la encargada de pintar en el main los productos incluidos
     //en las tiendas.
-    listProducts(generadorProductos) {
+    listProducts(generadorProductos, adminMode) {
         this.main.empty();
         for (let value of generadorProductos) {
-            this.main.append(
-                `<div class="card" style="width: 18rem;">
-                    <img src="img/${value.images}"  alt="fotoProducto" title="${value.name}"
-                        class="w-50 mt-5 mx-auto d-block">
-                    <div class="card-body">
-                        <h5 class="card-title text-center">${value.name}</h5>
-                        <p class="card-text text-center">${value.price} €</p>
-                        <!-- Este botón me mostrará en la misma página la información del producto -->
-                        <button type="button" class="btn btn-primary mx-auto mb-3 d-block detallesProducto" data-producto = "${value.name}" id="${value.name}">
-                            Ver Descripción
-                        </button>
-                        <!-- Este botón me llevará a una página nueva mostrando la información del producto -->
-                        <button type="button" class="btn btn-primary mx-auto d-block detallesProductoPaginaNueva" id="${value.name}">
-                        Ver Descripción Página Nueva
-                        </button>
-                    </div>
-                </div>`
-            )
+            if (adminMode) {
+                this.main.append(
+                    `<div class="card" style="width: 18rem;">
+                        <img src="img/${value.images}"  alt="fotoProducto" title="${value.name}"
+                            class="w-50 mt-5 mx-auto d-block">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">${value.name}</h5>
+                            <p class="card-text text-center">${value.price} €</p>
+                            <!-- Este botón me mostrará en la misma página la información del producto -->
+                            <button type="button" class="btn btn-primary mx-auto mb-3 d-block detallesProducto" data-producto = "${value.name}" id="${value.name}">
+                                Ver Descripción
+                            </button>
+                            <!-- Este botón me llevará a una página nueva mostrando la información del producto -->
+                            <button type="button" class="btn btn-primary mx-auto mb-3 d-block detallesProductoPaginaNueva" id="${value.name}">
+                            Ver Descripción Página Nueva
+                            </button>
+                            <!-- Este botón me servirá para llevar el producto a favoritos -->
+                            <button type="button" class="btn btn-primary mx-auto mb-3 d-block favoritosProducto" data-producto = "${value.name}" id="favorito">
+                            Agregar Producto a Favoritos
+                            </button>
+                        </div>
+                    </div>`
+                )
+            }
+            else {
+                this.main.append(
+                    `<div class="card" style="width: 18rem;">
+                        <img src="img/${value.images}"  alt="fotoProducto" title="${value.name}"
+                            class="w-50 mt-5 mx-auto d-block">
+                        <div class="card-body">
+                            <h5 class="card-title text-center">${value.name}</h5>
+                            <p class="card-text text-center">${value.price} €</p>
+                            <!-- Este botón me mostrará en la misma página la información del producto -->
+                            <button type="button" class="btn btn-primary mx-auto mb-3 d-block detallesProducto" data-producto = "${value.name}" id="${value.name}">
+                                Ver Descripción
+                            </button>
+                            <!-- Este botón me llevará a una página nueva mostrando la información del producto -->
+                            <button type="button" class="btn btn-primary mx-auto mb-3 d-block detallesProductoPaginaNueva" id="${value.name}">
+                            Ver Descripción Página Nueva
+                            </button>
+                        </div>
+                    </div>`
+                )
+            }
         }
     }
 
@@ -249,7 +279,7 @@ class storeHouseView {
     bindDetalleProductos(handleshowDetailsProducts) {
         $(this.main).on('click', ".detallesProducto", (event) => {
             let nombreProducto = $(event.target).closest($(".detallesProducto")).get(0).dataset.producto;
-            this.#excecuteHandler(handleshowDetailsProducts, [nombreProducto], this.main, {action: 'cargarDetalles', nombreProducto : nombreProducto}, '#DetallesProducto', event);
+            this.#excecuteHandler(handleshowDetailsProducts, [nombreProducto], this.main, { action: 'cargarDetalles', nombreProducto: nombreProducto }, '#DetallesProducto', event);
         });
     }
 
@@ -530,8 +560,8 @@ class storeHouseView {
 
     bindFormularioConsola(handlerFormularioConsola) {
         $('#formularioConsola').click((event) => {
-			this.#excecuteHandler(handlerFormularioConsola, [], this.main, {action: 'formularioConsola'}, '#FormularioConsola', event);
-		});
+            this.#excecuteHandler(handlerFormularioConsola, [], this.main, { action: 'formularioConsola' }, '#FormularioConsola', event);
+        });
     }
 
     mostrarFormularioConsola() {
@@ -641,8 +671,8 @@ class storeHouseView {
 
     bindFormularioVideojuego(handlerFormularioVideojuego) {
         $('#formularioVideojuego').click((event) => {
-			this.#excecuteHandler(handlerFormularioVideojuego, [], this.main, {action: 'formularioVideojuego'}, '#FormularioVideojuego', event);
-		});
+            this.#excecuteHandler(handlerFormularioVideojuego, [], this.main, { action: 'formularioVideojuego' }, '#FormularioVideojuego', event);
+        });
     }
 
     mostrarFormularioVideojuego() {
@@ -730,8 +760,8 @@ class storeHouseView {
 
     bindFormularioAccesorio(handlerFormularioAccesorio) {
         $('#formularioAccesorio').click((event) => {
-			this.#excecuteHandler(handlerFormularioAccesorio, [], this.main, {action: 'formularioAccesorio'}, '#FormularioAccesorio', event);
-		});
+            this.#excecuteHandler(handlerFormularioAccesorio, [], this.main, { action: 'formularioAccesorio' }, '#FormularioAccesorio', event);
+        });
     }
 
     mostrarFormularioAccesorio() {
@@ -830,8 +860,8 @@ class storeHouseView {
 
     bindFormularioCategoria(handlerFormularioCategoria) {
         $('#formularioCategoria').click((event) => {
-			this.#excecuteHandler(handlerFormularioCategoria, [], this.main, {action: 'formularioCategoria'}, '#FormularioCategoria', event);
-		});
+            this.#excecuteHandler(handlerFormularioCategoria, [], this.main, { action: 'formularioCategoria' }, '#FormularioCategoria', event);
+        });
     }
 
     mostrarFormularioCategoria() {
@@ -891,8 +921,8 @@ class storeHouseView {
 
     bindFormularioTienda(handlerFormularioTienda) {
         $('#formularioTienda').click((event) => {
-			this.#excecuteHandler(handlerFormularioTienda, [], this.main, {action: 'formularioTienda'}, '#FormularioTienda', event);
-		});
+            this.#excecuteHandler(handlerFormularioTienda, [], this.main, { action: 'formularioTienda' }, '#FormularioTienda', event);
+        });
     }
 
     mostrarFormularioTienda() {
@@ -966,8 +996,8 @@ class storeHouseView {
     //para eliminar una tienda.
     bindEliminarTienda(handlerEliminarTienda) {
         $('#formularioEliminarTienda').click((event) => {
-			this.#excecuteHandler(handlerEliminarTienda, [], this.main, {action: 'formularioEliminarTienda'}, '#FormularioEliminarTienda', event);
-		});
+            this.#excecuteHandler(handlerEliminarTienda, [], this.main, { action: 'formularioEliminarTienda' }, '#FormularioEliminarTienda', event);
+        });
     }
 
     mostrarEliminarTienda(iteradorTiendas) {
@@ -1034,8 +1064,8 @@ class storeHouseView {
 
     bindEliminarCategoria(handlerEliminarCategoria) {
         $('#formularioEliminarCategoria').click((event) => {
-			this.#excecuteHandler(handlerEliminarCategoria, [], this.main, {action: 'formularioEliminarCategoria'}, '#FormularioEliminarCategoria', event);
-		});
+            this.#excecuteHandler(handlerEliminarCategoria, [], this.main, { action: 'formularioEliminarCategoria' }, '#FormularioEliminarCategoria', event);
+        });
     }
 
     mostrarEliminarCategoria(iteradorCategorias) {
@@ -1099,8 +1129,8 @@ class storeHouseView {
     //para eliminar un producto.
     bindEliminarProducto(handlerEliminarProducto) {
         $('#formularioEliminarProducto').click((event) => {
-			this.#excecuteHandler(handlerEliminarProducto, [], this.main, {action: 'formularioEliminarProducto'}, '#FormularioEliminarProducto', event);
-		});
+            this.#excecuteHandler(handlerEliminarProducto, [], this.main, { action: 'formularioEliminarProducto' }, '#FormularioEliminarProducto', event);
+        });
     }
 
     mostrarEliminarProducto(iteradorProductos) {
@@ -1162,8 +1192,8 @@ class storeHouseView {
     //para vincular un producto.
     bindDefectoProducto(handlerDefectoProducto) {
         $('#formularioDefectoProducto').click((event) => {
-			this.#excecuteHandler(handlerDefectoProducto, [], this.main, {action: 'formularioDefectoProducto'}, '#FormularioDefectoProducto', event);
-		});
+            this.#excecuteHandler(handlerDefectoProducto, [], this.main, { action: 'formularioDefectoProducto' }, '#FormularioDefectoProducto', event);
+        });
     }
 
     mostrarDefectoProducto(iteradorProductos, iteradorTiendas) {
@@ -1252,8 +1282,8 @@ class storeHouseView {
     //para manejar el stock de un producto.
     bindStockProducto(handlerStockProducto) {
         $('#formularioStockProducto').click((event) => {
-			this.#excecuteHandler(handlerStockProducto, [], this.main, {action: 'formularioStockProducto'}, '#FormularioStockProducto', event);
-		});
+            this.#excecuteHandler(handlerStockProducto, [], this.main, { action: 'formularioStockProducto' }, '#FormularioStockProducto', event);
+        });
     }
 
     mostrarStockProducto(iteradorProductos, iteradorTiendas) {
@@ -1339,6 +1369,51 @@ class storeHouseView {
         })
     }
 
+    //El siguiente bind será el encargado de recoger los datos del formulario de login. A través de la función
+    //verificarCamposLogin() se realizará el checkeo de las variables.
+    //Tras pulsar el botón "Entrar" se recogerán las variables (siempre y cuando esté todo correcto) y estas se pasan al
+    //handlerLoginValidacion que será el encargado de generar la cookie.
+    bindLoginValidacion(handlerLoginValidacion) {
+        usuarioOK = false;
+        contrasenaOK = false;
+
+        $("#formulario").on("input", "#loginForm", function (event) {
+            fusuario = document.getElementById("fusuario");
+            fcontrasena = document.getElementById("fcontrasena");
+
+            verificarCamposLogin();
+        })
+
+        $("#formulario").on("submit", "#loginForm", function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            if (usuarioOK && contrasenaOK) {
+                handlerLoginValidacion(usuarioForm, contrasenaForm);
+            }
+        })
+    }
+
+    //Si hago click en el botón "Desconectar" llamo al handlerLogOut que será el encargado 
+    //de hacer el "borrado" de la cookie.
+    bindLogOut(handlerLogOut) {
+        $("#logout").click(() => {
+            handlerLogOut();
+        })
+    }
+
+    bindProductosFavoritos(handlerProductosFavoritos) {
+        $(this.main).on('click', ".favoritosProducto", (event) => {
+            let nombreProducto = $(event.target).closest($(".favoritosProducto")).get(0).dataset.producto;
+            handlerProductosFavoritos(nombreProducto);
+        });
+    }
+
+    bindMostrarProductosFavoritos(handlerMostrarFavoritos) {
+        $('#productosFavoritos').click((event) => {
+            this.#excecuteHandler(handlerMostrarFavoritos, [], this.main, { action: 'mostrarFavoritos' }, '#ProductosFavoritos', event);
+        });
+    }
 }
 
 function verificacionMal(input, mensaje) {
@@ -1400,6 +1475,8 @@ let productoString;
 let productoForm;
 let productoFormID;
 let stockForm;
+let usuarioForm;
+let contrasenaForm;
 
 function isSerialNumber(serialNumber) {
     let serialRegex = /^[A-Z]{3}[0-9]{2}$/;
@@ -1425,7 +1502,7 @@ function verificarCamposConsola() {
     impuestosForm = ftax.value;
     picsForm = fimage.value;
     let imagenRuta = picsForm.split("\\");
-    picsForm = imagenRuta[imagenRuta.length-1];
+    picsForm = imagenRuta[imagenRuta.length - 1];
     tipoForm = ftipo.value;
     formatoForm = fformato.value;
 
@@ -1496,7 +1573,7 @@ function verificarCamposVideojuego() {
     impuestosForm = ftax.value;
     picsForm = fimage.value;
     let imagenRuta = picsForm.split("\\");
-    picsForm = imagenRuta[imagenRuta.length-1];
+    picsForm = imagenRuta[imagenRuta.length - 1];
     generoForm = fgenero.value;
     dlcForm = fdlc.value;
 
@@ -1559,7 +1636,7 @@ function verificarCamposAccesorio() {
     impuestosForm = ftax.value;
     picsForm = fimage.value;
     let imagenRuta = picsForm.split("\\");
-    picsForm = imagenRuta[imagenRuta.length-1];
+    picsForm = imagenRuta[imagenRuta.length - 1];
     colorForm = fcolor.value;
     plataformaForm = fplataforma.value;
 
@@ -1641,7 +1718,7 @@ function verificarCamposTienda() {
     nameForm = fname.value;
     picsForm = fimage.value;
     let imagenRuta = picsForm.split("\\");
-    picsForm = imagenRuta[imagenRuta.length-1];
+    picsForm = imagenRuta[imagenRuta.length - 1];
     idForm = fid.value;
     cifForm = fcif.value;
     direccionForm = fdireccion.value;
@@ -1785,6 +1862,23 @@ function verificarCamposStockProducto() {
     } else {
         verificacionBienSelect(productoForm, 'OK');
         productoOK = true;
+    }
+}
+
+function verificarCamposLogin() {
+    usuarioForm = fusuario.value;
+    contrasenaForm = fcontrasena.value;
+
+    if (!usuarioForm) {
+        usuarioOK = false;
+    } else {
+        usuarioOK = true;
+    }
+
+    if (!contrasenaForm) {
+        contrasenaOK = false;
+    } else {
+        contrasenaOK = true;
     }
 }
 

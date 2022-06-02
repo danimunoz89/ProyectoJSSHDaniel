@@ -47,7 +47,7 @@ class storeHouseController {
         let consola2 = new Consolas("IOP32", "PlayStation5", "Sony", "La consola de sony", 500, 21, "ps5.png", "sobremesa", "disco");
         let consola3 = new Consolas("SWY76", "Nintendo Switch", "Nintendo", "La híbrida de Nintendo", 300, 21, "switch.png", "portatil", "cartucho");
         let accesorio1 = new Accesorios("CDT12", "Mando", "Ardistel", "Un mando para profesionales", 20, 21, "mandopro.png", "Negro", "pc");
-        let accesorio2 = new Accesorios("ASQ12", "Mando", "Logitech", "Un mando muy bonito", 50, 21, "mando.png", "Azul", "xbox");
+        let accesorio2 = new Accesorios("REW34", "Mando 2", "Logitech", "Un mando muy bonito", 50, 21, "mando.png", "Azul", "xbox");
         let accesorio3 = new Accesorios("RTY21", "Maleta", "Rainbow", "Un maleta para tu Nintendo Switch", 35, 21, "maleta.png", "Gris", "nintendo");
 
         //Añado Productos en Categoria
@@ -108,11 +108,37 @@ class storeHouseController {
         this.#storeHouseView.bindValidacionDefectoProducto(this.handlerValidacionDefectoProducto);
         this.#storeHouseView.bindStockProducto(this.handlerStockProducto);
         this.#storeHouseView.bindValidacionStockProducto(this.handlerValidacionStockProducto);
+        this.#storeHouseView.bindLoginValidacion(this.handlerLoginValidacion);
+        this.#storeHouseView.bindLogOut(this.handlerLogOut);
+        this.#storeHouseView.bindProductosFavoritos(this.handlerProductosFavoritos);
+        this.#storeHouseView.bindMostrarProductosFavoritos(this.handlerMostrarFavoritos);
     }
 
+    //Compruebo que existe una cookie con la info admin/admin y en función de ello
+    //muestro o no el formulario.
     //Invoco loadSHSingletonObjects mediante el onLoad()
     //despues de que se haya cargado el html.
     onLoad = () => {
+        let usuarioCookie = getCookie("userDaniestore");
+        let contrasenaCookie = getCookie("passDaniestore");
+
+        let loginForm = document.getElementById("loginForm");
+        let logoutBoton = document.getElementById("logout");
+
+        let mostrarFavBoton = document.getElementById("productosFavoritos");
+        let favBoton = document.getElementById("favorito");
+
+        if (usuarioCookie === "admin" && contrasenaCookie === "admin") {
+            alert(usuarioCookie + " bienvenido de nuevo");
+            loginForm.style.display = "none";
+            logoutBoton.style.display = "inline-block";
+            mostrarFavBoton.style.display = "inline-block";
+        }
+        else {
+            loginForm.style.display = "inline-block";
+            logoutBoton.style.display = "none";
+            mostrarFavBoton.style.display = "none";
+        }
         this.#loadSHSingletonObjects();
     }
 
@@ -152,8 +178,20 @@ class storeHouseController {
                 title = elem.category.title;
             }
         }
+
         let categoria = this.#storeHouseModel.getCategory(title);
-        this.#storeHouseView.listProducts(this.#storeHouseModel.getCategoryProducts(categoria));
+
+        let usuarioCookie = getCookie("userDaniestore");
+        let contrasenaCookie = getCookie("passDaniestore");
+
+        let adminMode = false;
+        if (usuarioCookie === "admin" && contrasenaCookie === "admin") {
+            adminMode = true;
+            this.#storeHouseView.listProducts(this.#storeHouseModel.getCategoryProducts(categoria), adminMode);
+        }
+        else {
+            this.#storeHouseView.listProducts(this.#storeHouseModel.getCategoryProducts(categoria), adminMode);
+        }
     }
 
     //En StoreHouseModel.js he creado una función que me permite
@@ -166,7 +204,18 @@ class storeHouseController {
     //en el HTML.
     handleProductsStoreList = (nombre) => {
         let tienda = this.#storeHouseModel.getShop(nombre);
-        this.#storeHouseView.listProducts(this.#storeHouseModel.getShopProducts(tienda));
+
+        let usuarioCookie = getCookie("userDaniestore");
+        let contrasenaCookie = getCookie("passDaniestore");
+
+        let adminMode = false;
+        if (usuarioCookie === "admin" && contrasenaCookie === "admin") {
+            adminMode = true;
+            this.#storeHouseView.listProducts(this.#storeHouseModel.getShopProducts(tienda), adminMode);
+        }
+        else {
+            this.#storeHouseView.listProducts(this.#storeHouseModel.getShopProducts(tienda), adminMode);
+        }
     }
 
     //Recojo de bindDetalleProductos el id del botón que pulsemos y con ello
@@ -435,6 +484,95 @@ class storeHouseController {
         let iteradorElemTiendas = this.#storeHouseModel.shops;
         this.#storeHouseView.mostrarVistaElemTiendas(iteradorElemTiendas);
     }
+
+    //Recoge los campos del formulario de Login. Checkeo que el user y el pass son los que se piden en el enunciado.
+    //Si son correctos, se crea la cookie ("nombreCookie", "valor que guarda", "nº de dias que se almacena").
+    //Posteriormente, muestro un mensaje de alerta (forma sencilla) para indicar que el logeo se ha relizado de forma correcta.
+    //Tras realizar la carga, hago aparecer el boton desconectar y desaparecer el formulario de login.
+
+    handlerLoginValidacion = (usuario, contrasena) => {
+        if (usuario !== "admin" || contrasena !== "admin") {
+            alert("El usuario o la contraseña no son correctos.");
+        }
+        else {
+            alert("Hola Admin!!! Te has logueado Correctamente :)");
+            setCookie("userDaniestore", "admin", 1);
+            setCookie("passDaniestore", "admin", 1);
+
+            let loginForm = document.getElementById("loginForm");
+            let logoutBoton = document.getElementById("logout");
+            let mostrarFavBoton = document.getElementById("productosFavoritos");
+            loginForm.style.display = "none";
+            logoutBoton.style.display = "inline-block";
+            mostrarFavBoton.style.display = "inline-block";
+        }
+    }
+
+    //Pongo valores a "cero" para la cookie. De este modo, estoy borrando la cookie.
+    //Tras realizar el borrado, hago desaparecer el boton desconectar y aparecer el formulario de login.
+
+    handlerLogOut = () => {
+        setCookie("userDaniestore", "", 0);
+        setCookie("passDaniestore", "", 0);
+        alert("Te has desconectado. Hasta pronto!!!");
+        let loginForm = document.getElementById("loginForm");
+        let logoutBoton = document.getElementById("logout");
+        let mostrarFavBoton = document.getElementById("productosFavoritos");
+        loginForm.style.display = "inline-block";
+        logoutBoton.style.display = "none";
+        mostrarFavBoton.style.display = "none";
+    }
+
+    handlerProductosFavoritos = (nombreProducto) => {
+        let objProducto = this.#storeHouseModel.getProduct(nombreProducto);
+        if (localStorage.getItem("arrayFavoritos") != null) {
+
+            let arrayFavoritos = localStorage.getItem("arrayFavoritos").split(",");
+
+            let index = arrayFavoritos.findIndex((elem) => {
+                return elem === objProducto.serialNumber;
+            });
+
+            console.log(objProducto.serialNumber);
+            console.log(index);
+            if (index === -1) {
+                arrayFavoritos.push(objProducto.serialNumber);
+                localStorage.setItem("arrayFavoritos", arrayFavoritos);
+            }
+        }
+        else {
+            let arrayFavoritos = [];
+            arrayFavoritos.push(objProducto.serialNumber);
+            localStorage.setItem("arrayFavoritos", arrayFavoritos);
+        }
+    }
+
+    handlerMostrarFavoritos = () => {
+        if (localStorage.getItem("arrayFavoritos") !== null) {
+            let arrayFavoritos = localStorage.getItem("arrayFavoritos").split(",");
+            let productosArray = [];
+            arrayFavoritos.forEach(element => {
+                let producto = this.#storeHouseModel.getProductBySerial(element);
+                productosArray.push(producto);
+            });
+
+            this.#storeHouseView.listProducts(this.#storeHouseModel.generadorProductos(productosArray));
+        }
+    }
 }
+
+function setCookie(cname, cvalue, exdays) {
+    const d = new Date();
+    d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
+    let expires = "expires=" + d.toUTCString();
+    document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+}
+
+function getCookie(cname) {
+    let re = new RegExp('(?:(?:^|.*;\\s*)' + cname +
+        '\\s*\\=\\s*([^;]*).*$)|^.*$');
+    return document.cookie.replace(re, "$1");
+}
+
 
 export { storeHouseController };
