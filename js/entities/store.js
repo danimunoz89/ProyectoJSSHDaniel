@@ -44,7 +44,7 @@ export class Store {
         this.#id = id;
     }
 
-    get id () {
+    get id() {
         return this.#id;
     }
 

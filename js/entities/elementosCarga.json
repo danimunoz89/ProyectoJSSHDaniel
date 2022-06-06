@@ -1,0 +1,173 @@
+{
+    "stores": [
+        {
+            "cif": 123123,
+            "name": "Game",
+            "address": "calle falsa",
+            "phone": 1231723,
+            "coords": {
+                "latitude": "38.9959284",
+                "longitude": "-3.9248678"
+            },
+            "images": "game.jpg",
+            "id": "tienda1"
+        },
+        {
+            "cif": 963741,
+            "name": "TodoConsolas",
+            "address": "calle verdadera",
+            "phone": 7539510,
+            "coords": {
+                "latitude": "38.979918",
+                "longitude": "-3.928439"
+            },
+            "images": "todoconsolas.jpg",
+            "id": "tienda2"
+        },
+        {
+            "cif": 845159,
+            "name": "Xtralife",
+            "address": "calle dudosa",
+            "phone": 8396374,
+            "coords": {
+                "latitude": "38.9854161",
+                "longitude": "-3.9227577"
+            },
+            "images": "xtralife.jpg",
+            "id": "tienda3"
+        }
+    ],
+    "categories": [
+        {
+            "title": "Juegos",
+            "description": "El alimento de las consolas",
+            "id": "Juegos"
+        },
+        {
+            "title": "Consolas",
+            "description": "Lo esencial para jugar",
+            "id": "Consolas"
+        },
+        {
+            "title": "Accesorios",
+            "description": "Complementos para tu consola",
+            "id": "Accesorios"
+        }
+    ],
+    "products": {
+        "consolas": [
+            {
+                "refTienda": 123123,
+                "serialNumber": "UTY21",
+                "name": "Xbox Series X",
+                "compania": "Microsoft",
+                "description": "La mejor consola",
+                "price": 500,
+                "tax": 21,
+                "images": "xbox.png",
+                "tipo": "sobremesa",
+                "formato": "disco"
+            },
+            {
+                "refTienda": 963741,
+                "serialNumber": "IOP32",
+                "name": "PlayStation5",
+                "compania": "Sony",
+                "description": "La consola de sony",
+                "price": 500,
+                "tax": 21,
+                "images": "ps5.png",
+                "tipo": "sobremesa",
+                "formato": "disco"
+            },
+            {
+                "refTienda": 845159,
+                "serialNumber": "SWY76",
+                "name": "Nintendo Switch",
+                "compania": "Nintendo",
+                "description": "La híbrida de Nintendo",
+                "price": 300,
+                "tax": 21,
+                "images": "switch.png",
+                "tipo": "portatil",
+                "formato": "cartucho"
+            }
+        ],
+        "accesorios": [
+            {
+                "refTienda": 123123,
+                "serialNumber": "CDT12",
+                "name": "Mando",
+                "compania": "Ardistel",
+                "description": "Un mando para profesionales",
+                "price": 20,
+                "tax": 21,
+                "images": "mandopro.png",
+                "color": "Negro",
+                "plataforma": "pc"
+            },
+            {
+                "refTienda": 963741,
+                "serialNumber": "REW34",
+                "name": "Mando 2",
+                "compania": "Logitech",
+                "description": "Un mando muy bonito",
+                "price": 50,
+                "tax": 21,
+                "images": "mando.png",
+                "color": "Azul",
+                "plataforma": "xbox"
+            },
+            {
+                "refTienda": 845159,
+                "serialNumber": "RTY21",
+                "name": "Maleta",
+                "compania": "Rainbow",
+                "description": "Un maleta para tu Nintendo Switch",
+                "price": 35,
+                "tax": 21,
+                "images": "maleta.png",
+                "color": "Gris",
+                "plataforma": "nintendo"
+            }
+        ],
+        "videojuegos": [
+            {
+                "refTienda": 123123,
+                "serialNumber": "CDE12",
+                "name": "FIFA 22",
+                "compania": "EA",
+                "description": "Es un juego de Fútbol",
+                "price": 70,
+                "tax": 21,
+                "images": "fifa22.png",
+                "genero": "Deportivo",
+                "dlc": 1
+            },
+            {
+                "refTienda": 963741,
+                "serialNumber": "WER74",
+                "name": "NBA 2k22",
+                "compania": "2K",
+                "description": "Es un juego de Baloncesto",
+                "price": 70,
+                "tax": 21,
+                "images": "nba2k22.png",
+                "genero": "Deportivo",
+                "dlc": 3
+            },
+            {
+                "refTienda": 845159,
+                "serialNumber": "REW47",
+                "name": "MADDEN NFL 22",
+                "compania": "EA",
+                "description": "Es un juego de Fútbol Americano",
+                "price": 70,
+                "tax": 21,
+                "images": "madden22.png",
+                "genero": "Deportivo",
+                "dlc": 0
+            }
+        ]
+    }
+}

@@ -14,7 +14,7 @@ export class Coords {
         if (!longitude) {
             throw new EmptyValueException("longitude");
         }
-        
+
         this.#latitude = latitude;
         this.#longitude = longitude;
     }

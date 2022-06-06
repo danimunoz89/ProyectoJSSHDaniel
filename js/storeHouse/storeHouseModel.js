@@ -143,6 +143,8 @@ const SHSingleton = (function () {
                 this.#categoriesStoreHouse.forEach((elem) => {
                     if (elem.category.title === "Cat.Defecto") {
                         arrayAux.forEach(element => {
+                            element.store = 789456;
+                            element.product.refTienda = 789456;
                             elem.products.push({ product: element });
                         });
                     }
@@ -280,6 +282,10 @@ const SHSingleton = (function () {
                     throw new InvalidValueException("number");
                 }
 
+                if (!number) {
+                    number = 5;
+                }
+
                 //Compruebo si la tienda está ya incluida
                 let index = this.#shops.findIndex((elem) => {
                     return elem.shop.cif === shopForProduct.cif;
@@ -310,6 +316,18 @@ const SHSingleton = (function () {
                     });
 
                 });
+
+                //Modifico el refTienda del producto para que tenga el mismo identificador que la tienda
+                //en la que se encuentra
+
+                for (let value of this.categories) {
+                    for (let elem of value.products) {
+                        if (elem.refTienda !== elem.store) {
+                            newProduct.refTienda = elem.store;
+                        }
+                    }
+                }
+
                 return cantidad;
             }
 
@@ -509,6 +527,7 @@ const SHSingleton = (function () {
                 this.#categoriesStoreHouse.forEach((elem) => {
                     elem.products.forEach((item) => {
                         if (item.store === cifDelete) {
+                            item.product.refTienda = this.#defaultShop.cif;
                             item.store = this.#defaultShop.cif;
                         }
                     });
@@ -570,21 +589,21 @@ const SHSingleton = (function () {
                 return this.#categoriesStoreHouse[aux].category;
             }
 
-            //Función retornará un objeto tienda en base un título
+            //Función retornará un objeto tienda en base un cifTienda
             //de tienda que pase.
-            getShop(nombre) {
+            getShop(cifTienda) {
 
                 //Compruebo si la tienda está ya incluida
                 let aux = -1;
                 this.#shops.forEach((elem, index) => {
-                    if (elem.shop.cif == nombre) {
+                    if (elem.shop.cif == cifTienda) {
                         aux = index;
                     }
                 });
 
                 //En caso que no exista la categoria, lanzamos excepción.
                 if (aux === -1) {
-                    throw new valueNotIncludedException("nombre");
+                    throw new valueNotIncludedException("cifTienda");
                 }
 
                 return this.#shops[aux].shop;
@@ -613,18 +632,8 @@ const SHSingleton = (function () {
                 return obj;
             }
 
-            listProducts(producto) {
-                let obj;
-                this.#categoriesStoreHouse.forEach((elem) => {
-                    elem.products.forEach((item) => {
-                        if (item.product.name === producto)
-                            obj = item.product;
-                    });
-                });
-
-                return obj;
-            }
-
+            //Función retornará un objeto producto en base al serialNumber 
+            //de producto que pase
             getProductBySerial(serial) {
                 let obj;
                 this.#categoriesStoreHouse.forEach((elem) => {
@@ -637,6 +646,8 @@ const SHSingleton = (function () {
                 return obj;
             }
 
+            //Permitirá sacar los distintos productos que tengamos
+            //guardados como favoritos facilitando así su pintado en la web
             *generadorProductos(array) {
                 for (const item of array) {
                     yield {

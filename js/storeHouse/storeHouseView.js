@@ -31,7 +31,6 @@ let productoOK;
 let stockOK;
 let usuarioOK;
 let contrasenaOK;
-
 let fsnumber;
 let fname;
 let fcompania;
@@ -940,17 +939,37 @@ class storeHouseView {
             <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Teléfono<span class="text-danger"></span></label> <input type="text" id="ftelefono" name="ftelefono" placeholder="Introduce un teléfono para la tienda"> <div id="veri"></div></div>
             </div>
             <div class="row justify-content-between text-left">
-            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Longitud<span class="text-danger"></span></label> <input type="text" id="flongitud" name="flongitud" placeholder="Introduce una longitud para la tienda"> <div id="veri"></div></div>
-            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Latitud<span class="text-danger"></span></label> <input type="text" id="flatitud" name="flatitud" placeholder="Introduce una latitud para la tienda"> <div id="veri"></div></div>
-            </div>
-            <div class="row justify-content-between text-left">
             <div class="form-group col-12 flex-column d-flex"> <label class="form-control-label px-3">Subir Imagen<span class="text-danger"> *</span></label> <input type="file" id="fimage" name="fimage"><div id="veri"></div></div>
             </div>
+            <div class="row justify-content-end">
+            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Mapa Tienda <span class="text-danger">*</span></label></div>
+            <div class="container"><div class="m4" id="mapid"></div></div>
             <div class="row justify-content-end">
             <div class="form-group col-sm-6"> <button type="submit" class="btn-block btn-primary" id="submitform">Añadir Tienda</button> </div>
         </div>
         </form>`
         )
+
+        let mapContainer = $('#mapid');
+        mapContainer.css({
+            height: '350px',
+            border: '2px solid #000000'
+        });
+        let map = L.map('mapid').setView([38.990831799999995, -3.9206173000000004], 15);
+
+        L.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BYSA</a>, Imagery © <a href="http://cloudmade.com">CloudMade</a>', maxZoom: 18
+        }).addTo(map);
+
+        map.on('click', function (event) {
+            map.eachLayer((layer) => {
+                if (layer['_latlng'] != undefined)
+                    layer.remove();
+            });
+            L.marker([event.latlng.lat, event.latlng.lng]).addTo(map);
+            longitudForm = event.latlng.lng;
+            latitudForm = event.latlng.lat;
+        });
     }
 
     //El siguiente bind será el encargado de ir recogiendo los datos de las distintas variables que se vayan
@@ -973,8 +992,6 @@ class storeHouseView {
             fname = document.getElementById("fname");
             fdireccion = document.getElementById("fdireccion");
             ftelefono = document.getElementById("ftelefono");
-            flongitud = document.getElementById("flongitud");
-            flatitud = document.getElementById("flatitud");
             fimage = document.getElementById("fimage");
 
             verificarCamposTienda();
@@ -1147,16 +1164,18 @@ class storeHouseView {
             </div>
             </div>
             <div class="row justify-content-end">
-            <div class="form-group col-sm-6"> <button type="submit" class="btn-block btn-primary" id="submitform">Eliminar Tienda</button> </div>
+            <div class="form-group col-sm-6"> <button type="submit" class="btn-block btn-primary" id="submitform">Eliminar Producto</button> </div>
             </div>
         </form>`
         )
 
         for (let value of iteradorProductos) {
             for (let elem of value.products) {
-                $("#fproducto").append(
-                    `<option value="${elem.product.name}">${elem.product.name}</option>`
-                )
+                if (elem.store !== undefined) {
+                    $("#fproducto").append(
+                        `<option value="${elem.product.name}">${elem.product.name}</option>`
+                    )
+                }
             }
         }
     }
@@ -1279,7 +1298,7 @@ class storeHouseView {
 
     //Cuando pulse el botón "Manejar Stock Producto" llamaré al handler "handlerStockProducto".
     //Este será el encargado de, mediante mostrarStockProducto(), pintar en el main el formulario
-    //para manejar el stock de un producto.
+    //para manejar el stock de un producto asociado a una tienda.
     bindStockProducto(handlerStockProducto) {
         $('#formularioStockProducto').click((event) => {
             this.#excecuteHandler(handlerStockProducto, [], this.main, { action: 'formularioStockProducto' }, '#FormularioStockProducto', event);
@@ -1292,7 +1311,7 @@ class storeHouseView {
             `<form class="form-card" name = "stockProducto" id="stockProducto" method = "post" enctype="multipart/form-data">
             <h1 class="text-center">MANEJAR STOCK PRODUCTOS EN TIENDAS</h1>
             <div class="row justify-content-between text-left">
-                <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Selecciona Producto situado en Tienda Defecto<span class="text-danger"> *</span></label>
+                <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Selecciona Producto vinculado a una tienda.<span class="text-danger"> *</span></label>
                 <select class="form-select" id="fproducto" name="fproducto" aria-label="Default select example">
                     <option selected>Selecciona un Producto</option>
                     </select>
@@ -1301,13 +1320,7 @@ class storeHouseView {
             </div>
 
             <div class="row justify-content-between text-left">
-            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Selecciona Tienda<span class="text-danger"> *</span></label>
-            <select class="form-select" id="ftienda" name="ftienda" aria-label="Default select example">
-                <option selected>Selecciona una tienda</option>
-                </select>
-        <div id="veriSelect"></div>
-        <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Cantidad Stock<span class="text-danger"> *</span></label> <input type="number" id="fstock" name="fstock" placeholder="Introduce una cantidad"><div id="veri"></div></div>
-
+        <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Cantidad Stock (Se suman unidades a las ya existentes)<span class="text-danger"> *</span></label> <input type="number" id="fstock" name="fstock" placeholder="Introduce una cantidad"><div id="veri"></div></div>
         </div>
         </div>
             <div class="row justify-content-end">
@@ -1319,19 +1332,15 @@ class storeHouseView {
         for (let value of iteradorProductos) {
             for (let elem of value.products) {
                 if (elem.store !== 789456) {
-                    $("#fproducto").append(
-                        `<option value="${elem.store}%${elem.product.name}">${elem.product.name}</option>`
-                    )
+                    for (let value of iteradorTiendas) {
+                        //Evito que salga la tienda por defecto a través del cif
+                        if (value.shop.cif === elem.store) {
+                            $("#fproducto").append(
+                                `<option value="${elem.store}%${elem.product.name}">${value.shop.name} - ${elem.product.name}</option>`
+                            )
+                        }
+                    }
                 }
-            }
-        }
-
-        for (let value of iteradorTiendas) {
-            //Evito que salga la tienda por defecto a través del cif
-            if (value.shop.cif !== 789456) {
-                $("#ftienda").append(
-                    `<option value="${value.shop.cif}">${value.shop.name}</option>`
-                )
             }
         }
     }
@@ -1353,7 +1362,7 @@ class storeHouseView {
 
             fproducto = document.getElementById("fproducto");
             fproductoid = document.getElementById("fproducto");
-            ftienda = document.getElementById("ftienda");
+            ftienda = document.getElementById("fproducto");
             fstock = document.getElementById("fstock");
 
             verificarCamposStockProducto();
@@ -1402,6 +1411,8 @@ class storeHouseView {
         })
     }
 
+    //Si hago click en el botón "Añadir a favoritos" llamo al handlerProductosFavoritos que será el encargado 
+    //de añadir el producto a la categoria de favoritos.
     bindProductosFavoritos(handlerProductosFavoritos) {
         $(this.main).on('click', ".favoritosProducto", (event) => {
             let nombreProducto = $(event.target).closest($(".favoritosProducto")).get(0).dataset.producto;
@@ -1409,10 +1420,48 @@ class storeHouseView {
         });
     }
 
+    //Si hago click en el botón "Favoritos" llamo al handlerMostrarFavoritos que será el encargado 
+    //de mostrar los productos añadidos a esta categoria.
     bindMostrarProductosFavoritos(handlerMostrarFavoritos) {
         $('#productosFavoritos').click((event) => {
             this.#excecuteHandler(handlerMostrarFavoritos, [], this.main, { action: 'mostrarFavoritos' }, '#ProductosFavoritos', event);
         });
+    }
+
+    //Si hago click en el botón "Mapa Tiendas" llamo al handlerMapaTiendas y me mostrará el mapa
+    //con la localización de las tiendas que tengamos registradas en la web.
+    bindMapaTiendas(handlerMapaTiendas) {
+        $('#mapaTiendas').click((event) => {
+            this.#excecuteHandler(handlerMapaTiendas, [], this.main, { action: 'mostrarTiendas' }, '#MapaTiendas', event);
+        });
+    }
+
+    mostrarMapaTiendas(iteradorTiendas) {
+        this.main.empty();
+        this.main.append(
+            `<div id="map"></div>`
+        )
+
+        var map = L.map('map').setView([38.98626, -3.92907], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        for (let value of iteradorTiendas) {
+            if (value.shop.cif !== 789456) {
+                L.marker([value.shop.coords.latitude, value.shop.coords.longitude]).addTo(map).bindPopup(`${value.shop.name}`).openPopup();
+            }
+        }
+    }
+
+    //Si hago click en el botón "backup" llamo al handler handleBackup que será el encargado de
+    //ir recogiendo TODA la info de los elementos almacenados en la web y los va a ir pasando a formato JSON
+    //donde posteriormente serán guardados en un string que nos será util para la obtención del fichero txt que se nos pide.
+    bindBackup(handleBackup) {
+        $('#ficheroBackup').click(function () {
+            handleBackup();
+        })
     }
 }
 
@@ -1473,7 +1522,6 @@ let tiendaForm;
 let categoriaForm;
 let productoString;
 let productoForm;
-let productoFormID;
 let stockForm;
 let usuarioForm;
 let contrasenaForm;
@@ -1722,8 +1770,6 @@ function verificarCamposTienda() {
     idForm = fid.value;
     cifForm = fcif.value;
     direccionForm = fdireccion.value;
-    longitudForm = flongitud.value;
-    latitudForm = flatitud.value;
     telefonoForm = ftelefono.value;
 
     if (!nameForm) {
@@ -1749,7 +1795,6 @@ function verificarCamposTienda() {
         verificacionBien(fid, 'OK');
         idOK = true;
     }
-
 }
 
 function verificarCamposEliminarCategoria() {
@@ -1823,13 +1868,10 @@ function verificarCamposDefectoProducto() {
 
 function verificarCamposStockProducto() {
     productoString = fproducto.value;
-
     let datosProducto = productoString.split("%");
 
-    productoFormID = datosProducto[0];
     productoForm = datosProducto[1];
-
-    tiendaForm = ftienda.value;
+    tiendaForm = datosProducto[0];
     stockForm = fstock.value;
 
     if (!productoForm || productoForm === "Selecciona un Producto") {
@@ -1840,11 +1882,9 @@ function verificarCamposStockProducto() {
         productoOK = true;
     }
 
-    if (!tiendaForm || tiendaForm === "Selecciona una tienda") {
-        verificacionMalSelect(ftienda, "Selecciona una tienda");
+    if (!tiendaForm) {
         tiendaOK = false;
     } else {
-        verificacionBienSelect(ftienda, 'OK');
         tiendaOK = true;
     }
 
@@ -1854,14 +1894,6 @@ function verificarCamposStockProducto() {
     } else {
         verificacionBien(fstock, 'OK');
         stockOK = true;
-    }
-
-    if (!(productoFormID === tiendaForm)) {
-        verificacionMalSelect(productoForm, "El producto no está en esa tienda.");
-        productoOK = false;
-    } else {
-        verificacionBienSelect(productoForm, 'OK');
-        productoOK = true;
     }
 }
 

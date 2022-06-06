@@ -9,9 +9,9 @@ class BaseException extends Error {
     }
 }
 
-export class AbstractClassException extends BaseException{
-    constructor(className,fileName,lineNumber) {
-        super(`Error: The class ${className} is abstract.`,fileName,lineNumber);
+export class AbstractClassException extends BaseException {
+    constructor(className, fileName, lineNumber) {
+        super(`Error: The class ${className} is abstract.`, fileName, lineNumber);
         this.className = className;
         this.name = "AbstractClassException";
     }
@@ -27,10 +27,10 @@ export class EmptyValueException extends BaseException {
 }
 
 export class InvalidAccessConstructorException extends BaseException {
-	constructor(fileName, lineNumber) {
-		super("ERROR: El constructor no puede ser llamado como una función.", fileName, lineNumber);
-		this.name = "InvalidAccessConstructorException";
-	}
+    constructor(fileName, lineNumber) {
+        super("ERROR: El constructor no puede ser llamado como una función.", fileName, lineNumber);
+        this.name = "InvalidAccessConstructorException";
+    }
 }
 
 export class InvalidValueException extends BaseException {

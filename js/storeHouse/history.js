@@ -1,4 +1,4 @@
-import {StoreHouseApp} from "./storeHouseApp.js";
+import { StoreHouseApp } from "./storeHouseApp.js";
 
 const historyActions = {
     init: () => {
@@ -9,60 +9,64 @@ const historyActions = {
         StoreHouseApp.handleProductsCategoryList(event.state.idCategoria);
     },
 
-    cargarTiendas : (event) => {
+    cargarTiendas: (event) => {
         StoreHouseApp.handleProductsStoreList(event.state.idTienda);
     },
 
-    cargarTiendasMenu : (event) => {
+    cargarTiendasMenu: (event) => {
         StoreHouseApp.handleProductsStoreList(event.state.idTienda);
     },
 
-    cargarDetalles : (event) => {
+    cargarDetalles: (event) => {
         StoreHouseApp.handleshowDetailsProducts(event.state.nombreProducto);
     },
 
-    formularioConsola : (event) => {
+    formularioConsola: (event) => {
         StoreHouseApp.handlerFormularioConsola();
     },
 
-    formularioVideojuego : (event) => {
+    formularioVideojuego: (event) => {
         StoreHouseApp.handlerFormularioVideojuego();
     },
 
-    formularioAccesorio : (event) => {
+    formularioAccesorio: (event) => {
         StoreHouseApp.handlerFormularioAccesorio();
     },
 
-    formularioCategoria : (event) => {
+    formularioCategoria: (event) => {
         StoreHouseApp.handlerFormularioCategoria();
     },
 
-    formularioTienda : (event) => {
+    formularioTienda: (event) => {
         StoreHouseApp.handlerFormularioTienda();
     },
 
-    formularioEliminarTienda : (event) => {
+    formularioEliminarTienda: (event) => {
         StoreHouseApp.handlerEliminarTienda();
     },
 
-    formularioEliminarCategoria : (event) => {
+    formularioEliminarCategoria: (event) => {
         StoreHouseApp.handlerEliminarCategoria();
     },
 
-    formularioEliminarProducto : (event) => {
+    formularioEliminarProducto: (event) => {
         StoreHouseApp.handlerEliminarProducto();
     },
 
-    formularioDefectoProducto : (event) => {
+    formularioDefectoProducto: (event) => {
         StoreHouseApp.handlerDefectoProducto();
     },
 
-    formularioStockProducto : (event) => {
+    formularioStockProducto: (event) => {
         StoreHouseApp.handlerStockProducto();
     },
 
-    mostrarFavoritos : (event) => {
+    mostrarFavoritos: (event) => {
         StoreHouseApp.handlerMostrarFavoritos();
+    },
+
+    mostrarTiendas: (event) => {
+        StoreHouseApp.handlerMapaTiendas();
     }
 }
 window.addEventListener('popstate', function (event) {
