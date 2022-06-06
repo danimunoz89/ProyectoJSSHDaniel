@@ -19,7 +19,9 @@ function isImage(images) {
 }
 
 export class Product {
-
+    //Añado refTienda para poder tener un punto de referencia entre los productos y la tienda a la que va asociado el mismo.
+    //Por defecto, la referencia será la tienda por defecto.
+    #refTienda
     #serialNumber;
     #name;
     //Añado Compania porque las subclases Videojuegos, Consolas y Accesorios van a tener esa propiedad
@@ -31,9 +33,13 @@ export class Product {
     #images;
 
 
-    constructor(serialNumber, name, compania, description, price, tax, images) {
+    constructor(refTienda, serialNumber, name, compania, description, price, tax, images) {
 
         if (!new.target) throw new InvalidAccessConstructorException();
+
+        if (!refTienda) {
+            throw new EmptyValueException("refTienda");
+        }
 
         if ((!serialNumber) || !(isSerialNumber(serialNumber))) {
             throw new InvalidRegexException("serialNumber");
@@ -51,6 +57,7 @@ export class Product {
             throw new InvalidRegexException("images");
         }
 
+        this.#refTienda = 789456;
         this.#serialNumber = serialNumber;
         this.#name = name;
         this.#compania = compania;
@@ -59,6 +66,17 @@ export class Product {
         this.#tax = tax;
         this.#images = images;
 
+    }
+
+    get refTienda() {
+        return this.#refTienda;
+    }
+
+    set refTienda(newRefTienda) {
+        if (!newRefTienda) {
+            throw new EmptyValueException("newRefTienda");
+        }
+        this.#refTienda = newRefTienda;
     }
 
     get serialNumber() {

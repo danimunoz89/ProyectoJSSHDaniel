@@ -9,9 +9,9 @@ export class Consolas extends Product {
     #tipo;
     #formato;
 
-    constructor(serialNumber, name, compania, description, price, tax, images, tipo, formato) {
-        
-        super(serialNumber, name, compania, description, price, tax, images);
+    constructor(refTienda, serialNumber, name, compania, description, price, tax, images, tipo, formato) {
+
+        super(refTienda, serialNumber, name, compania, description, price, tax, images);
 
         if (!(tipo === "sobremesa") && !(tipo === "portatil")) {
             throw new InvalidValueException("tipo");

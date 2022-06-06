@@ -216,7 +216,7 @@ try {
     for (const elem of generador) {
         console.log(elem);
     }
-    
+
     console.log("Elimino categoria (categoria3): ");
     console.log(almacen.removeCategory(categoria3));
 
@@ -228,7 +228,7 @@ try {
     console.log("Compruebo que categoria no existe y salta excepción: ");
     console.log(almacen);
     console.log(almacen.removeCategory(categoria3));
-    
+
 } catch (error) { console.error(error) }
 
 try {
@@ -255,7 +255,7 @@ try {
     for (const elem of generador4) {
         console.log(elem);
     }
-    
+
     console.log("Compruebo excepción tienda no existe: ")
     almacen.removeShop(tienda2);
 } catch (error) { console.error(error.message) }

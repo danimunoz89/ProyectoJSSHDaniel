@@ -9,9 +9,9 @@ export class Videojuegos extends Product {
     #genero;
     #dlc;
 
-    constructor(serialNumber, name, compania, description, price, tax, images, genero, dlc) {
-              
-        super(serialNumber, name, compania, description, price, tax, images);
+    constructor(refTienda, serialNumber, name, compania, description, price, tax, images, genero, dlc) {
+
+        super(refTienda, serialNumber, name, compania, description, price, tax, images);
 
         if (dlc < 0) {
             throw new InvalidValueException("dlc");

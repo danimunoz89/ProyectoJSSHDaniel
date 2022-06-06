@@ -13,4 +13,4 @@ import { storeHouseController } from "./storeHouseController.js";
 //Genero la aplicación instanciando el StoreHouse con el getInstance.
 const StoreHouseApp = new storeHouseController(SHSingleton.getInstance("Almacenillo"), new storeHouseView());
 
-export {StoreHouseApp};
+export { StoreHouseApp };

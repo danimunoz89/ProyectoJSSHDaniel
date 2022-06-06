@@ -9,9 +9,9 @@ export class Accesorios extends Product {
     #color;
     #plataforma;
 
-    constructor(serialNumber, name, compania, description, price, tax, images, color, plataforma) {
-               
-        super(serialNumber, name, compania, description, price, tax, images);
+    constructor(refTienda, serialNumber, name, compania, description, price, tax, images, color, plataforma) {
+
+        super(refTienda, serialNumber, name, compania, description, price, tax, images);
 
         if (!(plataforma === "xbox") && !(plataforma === "playstation") && !(plataforma === "nintendo") && !(plataforma === "pc")) {
             throw new InvalidValueException("plataforma");
@@ -38,5 +38,4 @@ export class Accesorios extends Product {
         }
         this.#plataforma = newPlataforma;
     }
-
 }

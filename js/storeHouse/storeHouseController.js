@@ -16,67 +16,151 @@ class storeHouseController {
     //Creo un método privado para crear objetos del SHSingleton
     #loadSHSingletonObjects() {
 
-        //Creo 3 categorias.
-        let categoria1 = new Category("Juegos", "El alimento de las consolas", "Juegos");
-        let categoria2 = new Category("Consolas", "Lo esencial para jugar", "Consolas");
-        let categoria3 = new Category("Accesorios", "Complementos para tu consola", "Accesorios");
+        let arrayStores;
+        let arrayCategories;
+        let arrayConsolas;
+        let arrayAccesorios;
+        let arrayVideojuegos;
 
-        //Añado Categorias
-        this.#storeHouseModel.addCategory(categoria1);
-        this.#storeHouseModel.addCategory(categoria2);
-        this.#storeHouseModel.addCategory(categoria3);
+        //Realizo la carga de datos a través de los elementos almacenados en el fichero json
+        $.ajax({
+            url: "../js/entities/elementosCarga.json",
+            method: 'GET',
+            async: true
+        }).done((data) => {
+            arrayStores = data.stores;
+            arrayStores.forEach(elem => {
+                let store = new Store(elem.cif, elem.name, elem.address, elem.phone, new Coords(elem.coords.latitude, elem.coords.longitude), elem.images, elem.id);
+                this.#storeHouseModel.addShop(store);
+            });
 
-        //Creo 3 tiendas
-        let coordenadas1 = new Coords("213123", "243123");
-        let tienda1 = new Store(123123, "Game", "calle falsa", 1231723, coordenadas1, "game.jpg", "tienda1");
-        let coordenadas2 = new Coords("852963", "741456");
-        let tienda2 = new Store(963741, "TodoConsolas", "calle verdadera", 7539510, coordenadas2, "todoconsolas.jpg", "tienda2");
-        let coordenadas3 = new Coords("712936", "471465");
-        let tienda3 = new Store(845159, "Xtralife", "calle dudosa", 8396374, coordenadas3, "xtralife.jpg", "tienda3");
+            arrayCategories = data.categories;
+            arrayCategories.forEach(elem => {
+                let category = new Category(elem.title, elem.description, elem.id);
+                this.#storeHouseModel.addCategory(category);
+            });
 
-        //Añado Tiendas
-        this.#storeHouseModel.addShop(tienda1);
-        this.#storeHouseModel.addShop(tienda2);
-        this.#storeHouseModel.addShop(tienda3);
+            arrayConsolas = data.products.consolas;
+            arrayConsolas.forEach(elem => {
+                let consola = new Consolas(elem.refTienda, elem.serialNumber, elem.name, elem.compania, elem.description, elem.price, elem.tax, elem.images, elem.tipo, elem.formato);
 
-        //Creo 3 productos por categoria
-        let juego1 = new Videojuegos("CDE12", "FIFA 22", "EA", "Es un juego de Fútbol", 70, 21, "fifa22.png", "Deportivo", 1);
-        let juego2 = new Videojuegos("WER74", "NBA 2k22", "2K", "Es un juego de Baloncesto", 70, 21, "nba2k22.png", "Deportivo", 3);
-        let juego3 = new Videojuegos("REW47", "MADDEN NFL 22", "EA", "Es un juego de Fútbol Americano", 70, 21, "madden22.png", "Deportivo", 0);
-        let consola1 = new Consolas("UTY21", "Xbox Series X", "Microsoft", "La mejor consola", 500, 21, "xbox.png", "sobremesa", "disco");
-        let consola2 = new Consolas("IOP32", "PlayStation5", "Sony", "La consola de sony", 500, 21, "ps5.png", "sobremesa", "disco");
-        let consola3 = new Consolas("SWY76", "Nintendo Switch", "Nintendo", "La híbrida de Nintendo", 300, 21, "switch.png", "portatil", "cartucho");
-        let accesorio1 = new Accesorios("CDT12", "Mando", "Ardistel", "Un mando para profesionales", 20, 21, "mandopro.png", "Negro", "pc");
-        let accesorio2 = new Accesorios("REW34", "Mando 2", "Logitech", "Un mando muy bonito", 50, 21, "mando.png", "Azul", "xbox");
-        let accesorio3 = new Accesorios("RTY21", "Maleta", "Rainbow", "Un maleta para tu Nintendo Switch", 35, 21, "maleta.png", "Gris", "nintendo");
+                for (const categoria of this.#storeHouseModel.categories) {
+                    if ((consola instanceof Consolas) && (categoria.category.title == "Consolas")) {
+                        this.#storeHouseModel.addProduct(consola, categoria.category)
+                    }
+                }
 
-        //Añado Productos en Categoria
-        this.#storeHouseModel.addProduct(juego1, categoria1);
-        this.#storeHouseModel.addProduct(juego2, categoria1);
-        this.#storeHouseModel.addProduct(juego3, categoria1);
-        this.#storeHouseModel.addProduct(consola1, categoria2);
-        this.#storeHouseModel.addProduct(consola2, categoria2);
-        this.#storeHouseModel.addProduct(consola3, categoria2);
+                for (const tienda of this.#storeHouseModel.shops) {
+                    if (tienda.shop.cif === elem.refTienda) {
+                        this.#storeHouseModel.addProductInShop(consola, tienda.shop)
+                    }
+                }
+            })
 
-        this.#storeHouseModel.addProduct(accesorio1, categoria3);
-        this.#storeHouseModel.addProduct(accesorio2, categoria3);
-        this.#storeHouseModel.addProduct(accesorio3, categoria3);
+            arrayAccesorios = data.products.accesorios;
+            arrayAccesorios.forEach(elem => {
+                let accesorio = new Accesorios(elem.refTienda, elem.serialNumber, elem.name, elem.compania, elem.description, elem.price, elem.tax, elem.images, elem.color, elem.plataforma);
 
-        //Añado Productos en Tienda
-        this.#storeHouseModel.addProductInShop(juego1, tienda1, 40);
-        this.#storeHouseModel.addProductInShop(consola1, tienda1, 20);
-        this.#storeHouseModel.addProductInShop(accesorio1, tienda1, 10);
-        this.#storeHouseModel.addProductInShop(juego2, tienda2, 40);
-        this.#storeHouseModel.addProductInShop(consola2, tienda2, 20);
-        this.#storeHouseModel.addProductInShop(accesorio2, tienda2, 10);
-        this.#storeHouseModel.addProductInShop(juego3, tienda3, 40);
-        this.#storeHouseModel.addProductInShop(consola3, tienda3, 20);
-        this.#storeHouseModel.addProductInShop(accesorio3, tienda3, 10);
+                for (const categoria of this.#storeHouseModel.categories) {
+                    if ((accesorio instanceof Accesorios) && (categoria.category.title == "Accesorios")) {
+                        this.#storeHouseModel.addProduct(accesorio, categoria.category)
+                    }
+                }
+
+                for (const tienda of this.#storeHouseModel.shops) {
+                    if (tienda.shop.cif === elem.refTienda) {
+                        this.#storeHouseModel.addProductInShop(accesorio, tienda.shop)
+                    }
+                }
+            })
+
+            arrayVideojuegos = data.products.videojuegos;
+            arrayVideojuegos.forEach(elem => {
+                let videojuego = new Videojuegos(elem.refTienda, elem.serialNumber, elem.name, elem.compania, elem.description, elem.price, elem.tax, elem.images, elem.genero, elem.dlc);
+
+                for (const categoria of this.#storeHouseModel.categories) {
+                    if ((videojuego instanceof Videojuegos) && (categoria.category.title == "Juegos")) {
+                        this.#storeHouseModel.addProduct(videojuego, categoria.category)
+                    }
+                }
+
+                for (const tienda of this.#storeHouseModel.shops) {
+                    if (tienda.shop.cif === elem.refTienda) {
+                        this.#storeHouseModel.addProductInShop(videojuego, tienda.shop)
+                    }
+                }
+            })
+        });
+
+        /*
+                ESTO LO DEJO COMENTADO YA QUE VOY A TRABAJAR ESTOS OBJETOS CON JSON
+                ESTAN INCLUIDOS EN entities-elementosCarga.json
+        
+                //Creo 3 categorias.
+                let categoria1 = new Category("Juegos", "El alimento de las consolas", "Juegos");
+                let categoria2 = new Category("Consolas", "Lo esencial para jugar", "Consolas");
+                let categoria3 = new Category("Accesorios", "Complementos para tu consola", "Accesorios");
+        
+                //Añado Categorias
+                this.#storeHouseModel.addCategory(categoria1);
+                this.#storeHouseModel.addCategory(categoria2);
+                this.#storeHouseModel.addCategory(categoria3);
+        
+                //Creo 3 tiendas
+                let coordenadas1 = new Coords("38.9959284", "-3.9248678");
+                let tienda1 = new Store(123123, "Game", "calle falsa", 1231723, coordenadas1, "game.jpg", "tienda1");
+                let coordenadas2 = new Coords("38.979918", "-3.928439");
+                let tienda2 = new Store(963741, "TodoConsolas", "calle verdadera", 7539510, coordenadas2, "todoconsolas.jpg", "tienda2");
+                let coordenadas3 = new Coords("38.9854161", "-3.9227577");
+                let tienda3 = new Store(845159, "Xtralife", "calle dudosa", 8396374, coordenadas3, "xtralife.jpg", "tienda3");
+        
+                //Añado Tiendas
+                this.#storeHouseModel.addShop(tienda1);
+                this.#storeHouseModel.addShop(tienda2);
+                this.#storeHouseModel.addShop(tienda3);
+        
+                //Creo 3 productos por categoria
+                let juego1 = new Videojuegos(123123, "CDE12", "FIFA 22", "EA", "Es un juego de Fútbol", 70, 21, "fifa22.png", "Deportivo", 1);
+                let juego2 = new Videojuegos(963741, "WER74", "NBA 2k22", "2K", "Es un juego de Baloncesto", 70, 21, "nba2k22.png", "Deportivo", 3);
+                let juego3 = new Videojuegos(845159, "REW47", "MADDEN NFL 22", "EA", "Es un juego de Fútbol Americano", 70, 21, "madden22.png", "Deportivo", 0);
+                let consola1 = new Consolas(123123, "UTY21", "Xbox Series X", "Microsoft", "La mejor consola", 500, 21, "xbox.png", "sobremesa", "disco");
+                let consola2 = new Consolas(963741, "IOP32", "PlayStation5", "Sony", "La consola de sony", 500, 21, "ps5.png", "sobremesa", "disco");
+                let consola3 = new Consolas(845159, "SWY76", "Nintendo Switch", "Nintendo", "La híbrida de Nintendo", 300, 21, "switch.png", "portatil", "cartucho");
+                let accesorio1 = new Accesorios(123123, "CDT12", "Mando", "Ardistel", "Un mando para profesionales", 20, 21, "mandopro.png", "Negro", "pc");
+                let accesorio2 = new Accesorios(963741, "REW34", "Mando 2", "Logitech", "Un mando muy bonito", 50, 21, "mando.png", "Azul", "xbox");
+                let accesorio3 = new Accesorios(845159, "RTY21", "Maleta", "Rainbow", "Un maleta para tu Nintendo Switch", 35, 21, "maleta.png", "Gris", "nintendo");
+        
+                //Añado Productos en Categoria
+                this.#storeHouseModel.addProduct(juego1, categoria1);
+                this.#storeHouseModel.addProduct(juego2, categoria1);
+                this.#storeHouseModel.addProduct(juego3, categoria1);
+                this.#storeHouseModel.addProduct(consola1, categoria2);
+                this.#storeHouseModel.addProduct(consola2, categoria2);
+                this.#storeHouseModel.addProduct(consola3, categoria2);
+        
+                this.#storeHouseModel.addProduct(accesorio1, categoria3);
+                this.#storeHouseModel.addProduct(accesorio2, categoria3);
+                this.#storeHouseModel.addProduct(accesorio3, categoria3);
+        
+                //Añado Productos en Tienda
+                this.#storeHouseModel.addProductInShop(juego1, tienda1, 40);
+                this.#storeHouseModel.addProductInShop(consola1, tienda1, 20);
+                this.#storeHouseModel.addProductInShop(accesorio1, tienda1, 10);
+                this.#storeHouseModel.addProductInShop(juego2, tienda2, 40);
+                this.#storeHouseModel.addProductInShop(consola2, tienda2, 20);
+                this.#storeHouseModel.addProductInShop(accesorio2, tienda2, 10);
+                this.#storeHouseModel.addProductInShop(juego3, tienda3, 40);
+                this.#storeHouseModel.addProductInShop(consola3, tienda3, 20);
+                this.#storeHouseModel.addProductInShop(accesorio3, tienda3, 10);
+            }
+        */
     }
 
     constructor(storeHouseModel, storeHouseView) {
+
         this.#storeHouseModel = storeHouseModel;
         this.#storeHouseView = storeHouseView;
+
         this.onLoad();
         this.#storeHouseView.bindInicio(this.handleCargaTiendas);
         this.#storeHouseView.bindCargaTiendas(this.handleCargaTiendas);
@@ -112,6 +196,9 @@ class storeHouseController {
         this.#storeHouseView.bindLogOut(this.handlerLogOut);
         this.#storeHouseView.bindProductosFavoritos(this.handlerProductosFavoritos);
         this.#storeHouseView.bindMostrarProductosFavoritos(this.handlerMostrarFavoritos);
+        this.#storeHouseView.bindMapaTiendas(this.handlerMapaTiendas);
+        this.#storeHouseView.bindBackup(this.handleBackup);
+
     }
 
     //Compruebo que existe una cookie con la info admin/admin y en función de ello
@@ -126,18 +213,21 @@ class storeHouseController {
         let logoutBoton = document.getElementById("logout");
 
         let mostrarFavBoton = document.getElementById("productosFavoritos");
-        let favBoton = document.getElementById("favorito");
+
+        let mostrarBackupBoton = document.getElementById("ficheroBackup");
 
         if (usuarioCookie === "admin" && contrasenaCookie === "admin") {
             alert(usuarioCookie + " bienvenido de nuevo");
             loginForm.style.display = "none";
             logoutBoton.style.display = "inline-block";
             mostrarFavBoton.style.display = "inline-block";
+            mostrarBackupBoton.style.display = "inline-block";
         }
         else {
             loginForm.style.display = "inline-block";
             logoutBoton.style.display = "none";
             mostrarFavBoton.style.display = "none";
+            mostrarBackupBoton.style.display = "none";
         }
         this.#loadSHSingletonObjects();
     }
@@ -249,7 +339,7 @@ class storeHouseController {
         Esta opción hacía lo mismo, pero en su lugar chequeaba en el Controller el tipo
         de producto y luego iba llamanado a la función pintar pertinente. De la forma que lo he dejado
         creo que queda mas elegante.
-
+ 
         if (producto instanceof Videojuegos) {
             this.#storeHouseView.mostrarDetallesVideojuegosNuevaVentana(producto);
         }
@@ -274,8 +364,8 @@ class storeHouseController {
     //el producto creado.
     handlerValidacionConsolaNueva = (serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, tipoForm, formatoForm) => {
         impuestosForm = parseInt(impuestosForm);
-        let objNuevo = new Consolas(serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, tipoForm, formatoForm);
-
+        let refTienda = 789456;
+        let objNuevo = new Consolas(refTienda, serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, tipoForm, formatoForm);
         let category = this.#storeHouseModel.getCategory("Consolas");
 
         this.#storeHouseModel.addProduct(objNuevo, category);
@@ -296,7 +386,9 @@ class storeHouseController {
     //el producto creado.
     handlerValidacionVideojuegoNuevo = (serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, generoForm, dlcForm) => {
         impuestosForm = parseInt(impuestosForm);
-        let objNuevo = new Videojuegos(serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, generoForm, dlcForm);
+        let refTienda = 789456;
+
+        let objNuevo = new Videojuegos(refTienda, serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, generoForm, dlcForm);
 
         let category = this.#storeHouseModel.getCategory("Juegos");
 
@@ -318,8 +410,9 @@ class storeHouseController {
     //el producto creado.
     handlerValidacionAccesorioNuevo = (serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, colorForm, plataformaForm) => {
         impuestosForm = parseInt(impuestosForm);
+        let refTienda = 789456;
 
-        let objNuevo = new Accesorios(serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, colorForm, plataformaForm);
+        let objNuevo = new Accesorios(refTienda, serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, colorForm, plataformaForm);
 
         let category = this.#storeHouseModel.getCategory("Accesorios");
 
@@ -429,7 +522,7 @@ class storeHouseController {
     //Al final, se muestra la pantalla inicial de la web pero la misma (si se comprueba su seccion) desaparecerá
     //el producto eliminado.
     handlerValidacionEliminarProducto = (productoForm) => {
-        let producto = this.#storeHouseModel.listProducts(productoForm);
+        let producto = this.#storeHouseModel.getProduct(productoForm);
         this.#storeHouseModel.removeProduct(producto);
 
         let iteradorElemTiendas = this.#storeHouseModel.shops;
@@ -450,7 +543,7 @@ class storeHouseController {
     //Al final, se muestra la pantalla inicial de la web pero la misma (si se comprueba su seccion) aparecerá
     //el producto vinculado en la tienda pertinente.
     handlerValidacionDefectoProducto = (productoForm, tiendaForm, stockForm) => {
-        let producto = this.#storeHouseModel.listProducts(productoForm);
+        let producto = this.#storeHouseModel.getProduct(productoForm);
         let tienda = this.#storeHouseModel.getShop(tiendaForm);
         stockForm = parseInt(stockForm);
 
@@ -474,8 +567,7 @@ class storeHouseController {
     //Al final, se muestra la pantalla inicial de la web pero la misma (si se comprueba su seccion) aparecerá
     //el producto vinculado en la tienda pertinente.
     handlerValidacionStockProducto = (productoForm, tiendaForm, stockForm) => {
-        let producto = this.#storeHouseModel.listProducts(productoForm);
-
+        let producto = this.#storeHouseModel.getProduct(productoForm);
         let tienda = this.#storeHouseModel.getShop(tiendaForm);
         stockForm = parseInt(stockForm);
 
@@ -502,9 +594,11 @@ class storeHouseController {
             let loginForm = document.getElementById("loginForm");
             let logoutBoton = document.getElementById("logout");
             let mostrarFavBoton = document.getElementById("productosFavoritos");
+            let mostrarBackupBoton = document.getElementById("ficheroBackup");
             loginForm.style.display = "none";
             logoutBoton.style.display = "inline-block";
             mostrarFavBoton.style.display = "inline-block";
+            mostrarBackupBoton.style.display = "inline-block";
         }
     }
 
@@ -518,11 +612,15 @@ class storeHouseController {
         let loginForm = document.getElementById("loginForm");
         let logoutBoton = document.getElementById("logout");
         let mostrarFavBoton = document.getElementById("productosFavoritos");
+        let mostrarBackupBoton = document.getElementById("ficheroBackup");
         loginForm.style.display = "inline-block";
         logoutBoton.style.display = "none";
         mostrarFavBoton.style.display = "none";
+        mostrarBackupBoton.style.display = "none";
     }
 
+    //Recoge la información del producto que vayamos a añadir a favoritos y se pusheará en un array
+    //que será almacenado via localStorage.
     handlerProductosFavoritos = (nombreProducto) => {
         let objProducto = this.#storeHouseModel.getProduct(nombreProducto);
         if (localStorage.getItem("arrayFavoritos") != null) {
@@ -533,8 +631,6 @@ class storeHouseController {
                 return elem === objProducto.serialNumber;
             });
 
-            console.log(objProducto.serialNumber);
-            console.log(index);
             if (index === -1) {
                 arrayFavoritos.push(objProducto.serialNumber);
                 localStorage.setItem("arrayFavoritos", arrayFavoritos);
@@ -547,18 +643,137 @@ class storeHouseController {
         }
     }
 
+    //Se recoge la información existente en localStorage relacionada con "arrayFavoritos". Como esa info
+    //viene en un string, vamos obteniendo (via split) los distintos productos que hemos almacenado y los introducimos
+    //en un array. Posteriormete, pintaremos los productos que están almacenados en ese array de favoritos.
     handlerMostrarFavoritos = () => {
         if (localStorage.getItem("arrayFavoritos") !== null) {
             let arrayFavoritos = localStorage.getItem("arrayFavoritos").split(",");
             let productosArray = [];
+
             arrayFavoritos.forEach(element => {
                 let producto = this.#storeHouseModel.getProductBySerial(element);
                 productosArray.push(producto);
             });
 
+            let index = productosArray.findIndex((elem) => {
+                return elem === undefined;
+            });
+
+            if (!(index === -1)) {
+                productosArray.splice(index, 1);
+            }
+
             this.#storeHouseView.listProducts(this.#storeHouseModel.generadorProductos(productosArray));
         }
     }
+
+    //A través de handlerMapaTiendas invoco a la función que me permitirá recorrer todas las tiendas
+    //almacenadas en la web para que estas sean pintadas en el mapa usando las coordenadas que aparecen
+    //en los atributos de las mismas
+    handlerMapaTiendas = () => {
+        let tiendas = this.#storeHouseModel.shops;
+        this.#storeHouseView.mostrarMapaTiendas(tiendas);
+    }
+
+    //Voy almacenando los distintos objetos almacenados en la web en un formato json y estos, a su vez,
+    //los iré almacenando en arrays que pasaré a un string con el que obtendré el fichero txt con la información
+    //que de todos los productos que se nos demanda.
+    handleBackup = () => {
+        let string = "";
+
+        let jsonCategorias = [];
+        let jsonTiendas = [];
+        let jsonProductos = [];
+
+        for (const categoria of this.#storeHouseModel.categories) {
+            let objCategoria = {
+                title: categoria.category.title,
+                description: categoria.category.description,
+                id: categoria.category.id
+            }
+            jsonCategorias.push(objCategoria);
+        }
+
+        string = string + JSON.stringify({ "categorias": jsonCategorias });
+
+        for (const tienda of this.#storeHouseModel.shops) {
+            let objTienda = {
+                cif: tienda.shop.cif,
+                name: tienda.shop.name,
+                address: tienda.shop.address,
+                phone: tienda.shop.phone,
+                coords: tienda.shop.coords,
+                images: tienda.shop.images,
+                id: tienda.shop.id
+            }
+            jsonTiendas.push(objTienda);
+        }
+        string = string + JSON.stringify({ "tiendas": jsonTiendas });
+
+        for (const producto of this.#storeHouseModel.categories) {
+            for (const item of producto.products) {
+                if (item.product instanceof Accesorios) {
+                    let objProducto = {
+                        refTienda: item.product.refTienda,
+                        serialNumber: item.product.serialNumber,
+                        name: item.product.name,
+                        compania: item.product.compania,
+                        description: item.product.description,
+                        price: item.product.price,
+                        tax: item.product.tax,
+                        images: item.product.images,
+                        color: item.product.color,
+                        plataforma: item.product.plataforma
+                    }
+                    jsonProductos.push(objProducto);
+                }
+
+                if (item.product instanceof Consolas) {
+                    let objProducto = {
+                        refTienda: item.product.refTienda,
+                        serialNumber: item.product.serialNumber,
+                        name: item.product.name,
+                        compania: item.product.compania,
+                        description: item.product.description,
+                        price: item.product.price,
+                        tax: item.product.tax,
+                        images: item.product.images,
+                        tipo: item.product.tipo,
+                        formato: item.product.formato
+                    }
+                    jsonProductos.push(objProducto);
+
+                }
+
+                if (item.product instanceof Videojuegos) {
+                    let objProducto = {
+                        refTienda: item.product.refTienda,
+                        serialNumber: item.product.serialNumber,
+                        name: item.product.name,
+                        compania: item.product.compania,
+                        description: item.product.description,
+                        price: item.product.price,
+                        tax: item.product.tax,
+                        images: item.product.images,
+                        genero: item.product.genero,
+                        dlc: item.product.dlc
+                    }
+                    jsonProductos.push(objProducto);
+
+                }
+            }
+        }
+        string = string + JSON.stringify({ "tiendas": jsonProductos });
+
+        $.ajax({
+            type: "post",
+            url: "../php/backup.php",
+            dataType: "json",
+            data: string
+        });
+    }
+
 }
 
 function setCookie(cname, cvalue, exdays) {
@@ -573,6 +788,5 @@ function getCookie(cname) {
         '\\s*\\=\\s*([^;]*).*$)|^.*$');
     return document.cookie.replace(re, "$1");
 }
-
 
 export { storeHouseController };

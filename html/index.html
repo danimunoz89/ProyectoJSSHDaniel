@@ -36,7 +36,7 @@
                 <div class="dropdown-content" id="tiendasListadoNav">
                 </div>
             </li>
-
+            <li><a href="javascript:void(0)" class="mapaTiendas" id="mapaTiendas">MAPA TIENDAS</a></li>
             <li class="dropdown">
                 <a class="dropbtn" id="formulariosNav">FORMULARIOS</a>
                 <div class="dropdown-content" id="formulariosListadoNav">
@@ -48,12 +48,14 @@
                     <a href="javascript:void(0)" id="formularioEliminarCategoria">ELIMINAR CATEGORIA</a>
                     <a href="javascript:void(0)" id="formularioEliminarTienda">ELIMINAR TIENDA</a>
                     <a href="javascript:void(0)" id="formularioEliminarProducto">ELIMINAR PRODUCCTO</a>
-                    <a href="javascript:void(0)" id="formularioDefectoProducto">VINCULAR A TIENDAS PRODUCTOS EN TIENDA DEFECTO</a>
+                    <a href="javascript:void(0)" id="formularioDefectoProducto">VINCULAR A TIENDAS PRODUCTOS EN TIENDA
+                        DEFECTO</a>
                     <a href="javascript:void(0)" id="formularioStockProducto">MANEJAR STOCK PRODUCTOS DE TIENDAS</a>
                 </div>
             </li>
             <li><a href="javascript:void(0)" class="cerrar" id="botonCerrar">CERRAR VENTANAS</a></li>
             <li><a href="javascript:void(0)" id="productosFavoritos">FAVORITOS</a></li>
+            <li><a href="javascript:void(0)" id="ficheroBackup">BACKUP</a></li>
             <li class="dropdown">
                 <a href="javascript:void(0)" class="dropbtn"><img src="img/traducir.png" width="60" alt="traducir"
                         title="traducir"></a>
@@ -81,13 +83,11 @@
                     <form class="px-4 py-3" id="loginForm">
                         <div class="mb-3">
                             <label for="campoUsuario" class="form-label">Usuario</label>
-                            <input type="text" class="form-control" id="fusuario"
-                                placeholder="Usuario">
+                            <input type="text" class="form-control" id="fusuario" placeholder="Usuario">
                         </div>
                         <div class="mb-3">
                             <label for="campoContrasena" class="form-label">Contraseña</label>
-                            <input type="password" class="form-control" id="fcontrasena"
-                                placeholder="Contraseña">
+                            <input type="password" class="form-control" id="fcontrasena" placeholder="Contraseña">
                         </div>
                         <button type="submit" class="btn btn-primary" id="login">Entrar</button>
                     </form>
@@ -172,6 +172,13 @@
         src="//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
     <script src="../js/storeHouse/storeHouseApp.js" type="module"></script>
     <script src="../js/storeHouse/history.js" type="module"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.8.0/dist/leaflet.css"
+        integrity="sha512-hoalWLoI8r4UszCkZ5kL8vayOGVae1oxXe/2A4AO6J9+580uKHDO3JdHb7NzwwzK5xr/Fs0W40kiNHxM9vyTtQ=="
+        crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.8.0/dist/leaflet.js"
+        integrity="sha512-BB3hKbKWOc9Ez/TAwyWxNXeoV9c1v6FIeYiBieIWkpLjauysF18NzgR1MBNBXf8/KABdlkX68nAhlwcDFLGPCQ=="
+        crossorigin=""></script>
+
 </body>
 
 </html>
