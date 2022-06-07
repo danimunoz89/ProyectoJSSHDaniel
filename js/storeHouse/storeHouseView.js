@@ -374,6 +374,33 @@ class storeHouseView {
         )
     }
 
+    mostrarDetallesOtroProducto(products, iteradorTiendas) {
+        let stock;
+
+        for (let value of iteradorTiendas) {
+            for (let elem of value.products) {
+                if (elem.product === products.serialNumber) {
+                    stock = elem.quantity;
+                }
+            }
+        }
+        this.main.empty();
+        this.main.append(
+            `<div class="card" style="width: 18rem;">
+            <img src="img/${products.images}"  alt="fotoProducto" title="${products.name}"
+                class="w-50 mt-5 mx-auto d-block">
+            <div class="card-body">
+                <h5 class="card-title text-center">${products.name}</h5>
+                <p class="card-text text-center"><b>Número de Serie:</b> ${products.serialNumber}</p>
+                <p class="card-text text-center"><b>Descripción:</b> ${products.description}</p>
+                <p class="card-text text-center"><b>Precio:</b> ${products.price} €</p>
+                <p class="card-text text-center"><b>Impuestos:</b> ${products.tax} %</p>
+                <p class="card-text text-center"><b>Stock:</b> ${stock}</p>
+            </div>
+            </div>`
+        )
+    }
+
     //Cuando pulse uno de los botones dinámicos generados que contengan el class
     //.detallesProductoPaginaNueva se recoje el id que pasaré al handleProductosNuevaVentana
     //para poder obtener el objeto tienda necesario para poder mostrar 
@@ -529,6 +556,36 @@ class storeHouseView {
 
             ventanaNueva.document.body.insertAdjacentHTML("afterbegin", accesorio);
         }
+        else {
+            let otroProducto = (
+                `<!--Cuerpo de la web-->
+                <main class="main">
+            
+                    <!--Parte Principal-->
+                    <div class=main__div>
+                    <div class="card" style="width: 18rem;">
+                    <img src="./img/${products.images}"  alt="fotoProducto" title="${products.name}"
+                        class="w-50 mt-5 mx-auto d-block">
+                    <div class="card-body">
+                        <h5 class="card-title text-center">${products.name}</h5>
+                        <p class="card-text text-center"><b>Número de Serie:</b> ${products.serialNumber}</p>
+                        <p class="card-text text-center"><b>Descripción:</b> ${products.description}</p>
+                        <p class="card-text text-center"><b>Precio:</b> ${products.price} €</p>
+                        <p class="card-text text-center"><b>Impuestos:</b> ${products.tax} %</p>
+                        <p class="card-text text-center"><b>Stock:</b> ${stock}</p>
+                    </div>
+                    </div>
+                    </div>
+            
+                </main>
+                
+                <script src="../js/storeHouse/storeHouseApp.js" type="module"></script>
+            </body>
+            
+            </html>`);
+
+            ventanaNueva.document.body.insertAdjacentHTML("afterbegin", otroProducto);
+        }
         this.websAbiertas.push(ventanaNueva);
     }
 
@@ -552,6 +609,113 @@ class storeHouseView {
     // FORMULARIOS
     //
     //
+
+    //Cuando pulse el botón "Añadir Otro Tipo Producto" llamaré al handler "handlerFormularioOtro".
+    //Este será el encargado de, mediante mostrarFormularioOtro(), pintar en el main el formulario
+    //para insertar un producto genérico.
+
+    bindFormularioOtro(handlerFormularioOtro) {
+        $('#formularioOtro').click((event) => {
+            this.#excecuteHandler(handlerFormularioOtro, [], this.main, { action: 'formularioOtro' }, '#FormularioOtro', event);
+        });
+    }
+
+    mostrarFormularioOtro(iteradorCategorias) {
+        this.main.empty();
+        this.main.append(
+            `<form class="form-card" name = "otroFormulario" id="otroFormulario" method = "post" enctype="multipart/form-data">
+            <h1 class="text-center">FORMULARIO PRODUCTO</h1>
+            <div class="row justify-content-between text-left">
+                <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Serial Number<span class="text-danger"> *</span></label> <input type="text" id="fsnumber" name="fsnumber" placeholder="Introduce el serial number"><div id="veri"></div></div>
+                <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Nombre<span class="text-danger"> *</span></label> <input type="text" id="fname" name="fname" placeholder="Introduce el nombre"> <div id="veri"></div></div>
+            </div>
+            <div class="row justify-content-between text-left">
+                <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Compañia<span class="text-danger"></span></label> <input type="text" id="fcompania" name="fcompania" placeholder="Introduce la Compañia"> <div id="veri"></div> </div>
+                <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Descripción<span class="text-danger"></span></label> <input type="text" id="fdescription" name="fdescription" placeholder="Introduce una descripción"> <div id="veri"></div> </div>
+            </div>
+            <div class="row justify-content-between text-left">
+                <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Precio<span class="text-danger"> *</span></label> <input type="number" id="fprice" name="fprice" placeholder="Introduce un precio"><div id="veri"></div></div>
+                <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Impuestos<span class="text-danger"> *</span></label>
+                <select class="form-select" id="ftax" name="ftax" aria-label="Default select example">
+                <option selected>Selecciona un tipo de impuesto</option>
+                <option value="4">4</option>
+                <option value="10">10</option>
+                <option value="21">21</option>
+                </select>
+                <div id="veriSelect"></div>
+                </div>
+            </div>
+            <div class="row justify-content-between text-left">
+                <div class="form-group col-12 flex-column d-flex"> <label class="form-control-label px-3">Subir Imagen<span class="text-danger"> *</span></label> <input type="file" id="fimage" name="fimage"><div id="veri"></div></div>
+            </div>
+            <div class="row justify-content-between text-left">
+            <div class="form-group col-sm-6 flex-column d-flex"> <label class="form-control-label px-3">Selecciona Categoria<span class="text-danger"> *</span></label>
+            <select class="form-select" id="fcategoria" name="fcategoria" aria-label="Default select example">
+                <option selected>Selecciona una Categoria</option>
+                </select>
+        <div id="veriSelect"></div>
+            </div>
+            <div class="row justify-content-end">
+            <div class="form-group col-sm-6"> <button type="submit" class="btn-block btn-primary" id="submitform">Añadir Producto</button> </div>
+        </div>
+        </form>`
+        )
+
+        for (let value of iteradorCategorias) {
+            if (value.category.title !== "Cat.Defecto") {
+                $("#fcategoria").append(
+                    `<option value="${value.category.title}">${value.category.title}</option>`
+                )
+            }
+        }
+    }
+
+    //El siguiente bind será el encargado de ir recogiendo los datos de las distintas variables que se vayan
+    //incorporando al formulario. A través de la función verificarCamposOtroProducto() se realizará el chequeo pertinente
+    //de las variables y si cumplen con lo establecido.
+    //Tras pusar el botón "Añadir Producto", se recogerán las variables (siempre y cuando esté todo correcto) y estas se pasarán
+    //al handlerValidacionOtroProducto que será la encargada de generar el producto deseado y que este aparezca de forma
+    //dinámica en la web.
+
+    bindValidacionOtroProducto(handlerValidacionOtroProducto) {
+
+        serialNumberOK = false;
+        nombreOK = false;
+        precioOK = false;
+        impuestosOK = false;
+        picsOK = false;
+        categoriaOK = false;
+
+        //Recojo el contenido del formulario escrito.
+        $(this.main).on("input", "#otroFormulario", function (event) {
+
+            fsnumber = document.getElementById("fsnumber");
+            fname = document.getElementById("fname");
+            fcompania = document.getElementById("fcompania");
+            fdescription = document.getElementById("fdescription");
+            fprice = document.getElementById("fprice");
+            ftax = document.getElementById("ftax");
+            fimage = document.getElementById("fimage");
+            fcategoria = document.getElementById("fcategoria");
+
+
+            //A través de esta función compruebo que el contenido es introducido de la forma correcta
+            verificarCamposOtroProducto();
+        })
+
+        //Tras pulsar "enviar", recojo la información del formulario y la paso al handler correspondiente
+        //que será el encargado de generar el objeto producto que será mostrado en la web.
+        $(document).on("submit", "#otroFormulario", function (event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            if ((serialNumberOK) && (nombreOK) && (precioOK) && (impuestosOK) && (picsOK) && (categoriaOK)) {
+                handlerValidacionOtroProducto(serialNumberForm, nameForm, companiaForm, descriptionForm, precioForm, impuestosForm, picsForm, categoriaForm);
+            }
+
+        })
+    }
 
     //Cuando pulse el botón "Añadir Consola" llamaré al handler "handlerFormularioConsola".
     //Este será el encargado de, mediante mostrarFormularioConsola(), pintar en el main el formulario
@@ -1538,6 +1702,67 @@ function isImage(images) {
     let imagesRegex = /([A-z\-_0-9\/\.]*\.(png|jpg|jpeg|gif))/;
     if (imagesRegex.test(images)) {
         return true;
+    }
+}
+
+function verificarCamposOtroProducto() {
+    serialNumberForm = fsnumber.value;
+    nameForm = fname.value;
+    companiaForm = fcompania.value;
+    descriptionForm = fdescription.value;
+    precioForm = fprice.value;
+    impuestosForm = ftax.value;
+    picsForm = fimage.value;
+    let imagenRuta = picsForm.split("\\");
+    picsForm = imagenRuta[imagenRuta.length - 1];
+    categoriaForm = fcategoria.value;
+
+    if ((!serialNumberForm) || !(isSerialNumber(serialNumberForm))) {
+        verificacionMal(fsnumber, "Mal. Verifica el Serial Number");
+        serialNumberOK = false;
+    } else {
+        verificacionBien(fsnumber, 'OK');
+        serialNumberOK = true;
+    }
+
+    if (!nameForm) {
+        verificacionMal(fname, "El Nombre no puede estar vacio");
+        nombreOK = false;
+    } else {
+        verificacionBien(fname, 'OK');
+        nombreOK = true;
+    }
+
+    if ((!precioForm) || (precioForm < 0)) {
+        verificacionMal(fprice, "Precio vacio o Negativo. Revisalo");
+        precioOK = false;
+    } else {
+        verificacionBien(fprice, 'OK');
+        precioOK = true;
+    }
+
+    if (!(impuestosForm == 4) && !(impuestosForm == 10) && !(impuestosForm == 21)) {
+        verificacionMalSelect(ftax, "Selecciona un impuesto");
+        impuestosOK = false;
+    } else {
+        verificacionBienSelect(ftax, 'OK');
+        impuestosOK = true;
+    }
+
+    if (!isImage(picsForm)) {
+        verificacionMal(fimage, "Obligatorio");
+        picsOK = false;
+    } else {
+        verificacionBien(fimage, 'OK');
+        picsOK = true;
+    }
+
+    if (!categoriaForm || categoriaForm === "Selecciona una Categoria") {
+        verificacionMalSelect(fcategoria, "Selecciona una tienda");
+        categoriaOK = false;
+    } else {
+        verificacionBienSelect(fcategoria, 'OK');
+        categoriaOK = true;
     }
 }
 

@@ -172,6 +172,8 @@ class storeHouseController {
         this.#storeHouseView.bindDetalleProductos(this.handleshowDetailsProducts);
         this.#storeHouseView.bindProductosNuevaVentana(this.handleProductosNuevaVentana);
         this.#storeHouseView.bindCerrarVentanas();
+        this.#storeHouseView.bindFormularioOtro(this.handlerFormularioOtro);
+        this.#storeHouseView.bindValidacionOtroProducto(this.handlerValidacionOtroProducto);
         this.#storeHouseView.bindFormularioConsola(this.handlerFormularioConsola);
         this.#storeHouseView.bindValidacionConsolaNueva(this.handlerValidacionConsolaNueva);
         this.#storeHouseView.bindFormularioVideojuego(this.handlerFormularioVideojuego);
@@ -325,6 +327,9 @@ class storeHouseController {
         else if (producto instanceof Accesorios) {
             this.#storeHouseView.mostrarDetallesAccesorios(producto, iteradorTiendas);
         }
+        else {
+            this.#storeHouseView.mostrarDetallesOtroProducto(producto, iteradorTiendas);
+        }
     }
 
     //Recojo de bindProductosNuevaVentana el id del botón que pulsemos y con ello
@@ -350,6 +355,30 @@ class storeHouseController {
             this.#storeHouseView.mostrarDetallesAccesoriosNuevaVentana(producto);
         }
         */
+    }
+
+    //El handler llamará a la función mostrarFormularioOtro y pintará el formulario
+    //de insercción del producto en el main de la web.
+    handlerFormularioOtro = () => {
+        let categoria = this.#storeHouseModel.categories;
+        this.#storeHouseView.mostrarFormularioOtro(categoria);
+    }
+
+    //Recoge los campos del formulario asociado. Con ellos crea un objeto producto (Product) y realiza
+    //las acciones pertinentes para introducirlo en el modelo.
+    //Al final, se muestra la pantalla inicial de la web pero la misma (si se comprueba su seccion) aparecerá
+    //el producto creado.
+
+    handlerValidacionOtroProducto = (serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm, categoriaForm) => {
+        impuestosForm = parseInt(impuestosForm);
+        let refTienda = 789456;
+        let objNuevo = new Product (refTienda, serialNumberForm, nameForm, companiaForm, descipcionForm, precioForm, impuestosForm, picsForm);
+        let category = this.#storeHouseModel.getCategory(categoriaForm);
+
+        this.#storeHouseModel.addProduct(objNuevo, category);
+
+        let iteradorElemTiendas = this.#storeHouseModel.shops;
+        this.#storeHouseView.mostrarVistaElemTiendas(iteradorElemTiendas);
     }
 
     //El handler llamará a la función mostrarFormularioConsola y pintará el formulario
@@ -729,7 +758,7 @@ class storeHouseController {
                     jsonProductos.push(objProducto);
                 }
 
-                if (item.product instanceof Consolas) {
+                else if (item.product instanceof Consolas) {
                     let objProducto = {
                         refTienda: item.product.refTienda,
                         serialNumber: item.product.serialNumber,
@@ -746,7 +775,7 @@ class storeHouseController {
 
                 }
 
-                if (item.product instanceof Videojuegos) {
+                else if (item.product instanceof Videojuegos) {
                     let objProducto = {
                         refTienda: item.product.refTienda,
                         serialNumber: item.product.serialNumber,
@@ -761,6 +790,20 @@ class storeHouseController {
                     }
                     jsonProductos.push(objProducto);
 
+                }
+
+                else {
+                    let objProducto = {
+                        refTienda: item.product.refTienda,
+                        serialNumber: item.product.serialNumber,
+                        name: item.product.name,
+                        compania: item.product.compania,
+                        description: item.product.description,
+                        price: item.product.price,
+                        tax: item.product.tax,
+                        images: item.product.images,
+                    }
+                    jsonProductos.push(objProducto);
                 }
             }
         }

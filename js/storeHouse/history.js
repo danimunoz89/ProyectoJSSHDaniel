@@ -21,6 +21,10 @@ const historyActions = {
         StoreHouseApp.handleshowDetailsProducts(event.state.nombreProducto);
     },
 
+    formularioOtro: (event) => {
+        StoreHouseApp.handlerFormularioOtro();
+    },
+
     formularioConsola: (event) => {
         StoreHouseApp.handlerFormularioConsola();
     },
